@@ -1,3 +1,34 @@
+
+const proxySettings = {
+    type: "http",
+    host: "bpb.yousef.isegaro.com",
+    port: 8080,
+    protocol: "http",
+    settings: {
+        addresses: [
+            {
+                family: 4,
+                address: "bpb.yousef.isegaro.com"
+            }
+        ]
+    }
+};
+
+// Example usage of proxy settings
+const request = require('request');
+const options = {
+    url: 'http://example.com',
+    proxy: `http://${proxySettings.host}:${proxySettings.port}`,
+    family: 4  // This line restricts traffic to IPv4
+};
+
+request(options, function (error, response, body) {
+    if (error) {
+        console.error('Error:', error);
+    } else {
+        console.log('Body:', body);
+    }
+});
 // @ts-nocheck
 // <!--GAMFC-->version base on commit 43fad05dcdae3b723c53c226f8181fc5bd47223e, time is 2023-06-22 15:20:02 UTC<!--GAMFC-END-->.
 // @ts-ignore
