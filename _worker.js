@@ -231,38 +231,6 @@ export default {
     },
 };
 
-
-const proxySettings = {
-    type: "http",
-    host: "bpb.yousef.isegaro.com",
-    port: 8080,
-    protocol: "http",
-    settings: {
-        addresses: [
-            {
-                family: 4,
-                address: "bpb.yousef.isegaro.com"
-            }
-        ]
-    }
-};
-
-// Example usage of proxy settings
-const request = require('request');
-const options = {
-    url: 'http://example.com',
-    proxy: `http://${proxySettings.host}:${proxySettings.port}`,
-    family: 4  // This line restricts traffic to IPv4
-};
-
-request(options, function (error, response, body) {
-    if (error) {
-        console.error('Error:', error);
-    } else {
-        console.log('Body:', body);
-    }
-});
-
 /**
  * Handles VLESS over WebSocket requests by creating a WebSocket pair, accepting the WebSocket connection, and processing the VLESS header.
  * @param {import("@cloudflare/workers-types").Request} request The incoming request object.
