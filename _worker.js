@@ -37,7 +37,7 @@ export default {
             
             userID = env.UUID || userID;
             proxyIP = env.PROXYIP || proxyIP;
-            dohURL = env.DNS_RESOLVER_URL || dohURL;
+           // dohURL = env.DNS_RESOLVER_URL || dohURL;
             const upgradeHeader = request.headers.get('Upgrade');
             
             if (!upgradeHeader || upgradeHeader !== 'websocket') {
@@ -1668,13 +1668,13 @@ const getRandomPath = (length) => {
 }
 
 const resolveDNS = async (domain) => {
-    const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
-    const dohURLv6 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
+   // const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
+  //  const dohURLv6 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
 
     try {
         const [ipv4Response, ipv6Response] = await Promise.all([
-            fetch(dohURLv4, { headers: { accept: 'application/dns-json' } }),
-            fetch(dohURLv6, { headers: { accept: 'application/dns-json' } }),
+          //  fetch(dohURLv4, { headers: { accept: 'application/dns-json' } }),
+         //   fetch(dohURLv6, { headers: { accept: 'application/dns-json' } }),
         ]);
 
         const ipv4Addresses = await ipv4Response.json();
