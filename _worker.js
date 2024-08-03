@@ -10,7 +10,7 @@ import { connect } from 'cloudflare:sockets';
 let userID = '89b3cbba-e6ac-485a-9481-976a0415eab9';
 
 // https://www.nslookup.io/domains/bpb.yousef.isegaro.com/dns-records/
-const proxyIPs= ['141.147.94.225'];
+const proxyIPs= ['bpb.yousef.isegaro.com'];
 
 const defaultHttpPorts = ['80', '8080', '2052', '2082', '2086', '2095', '8880'];
 const defaultHttpsPorts = ['443', '8443', '2053', '2083', '2087', '2096'];
@@ -18,6 +18,8 @@ const defaultHttpsPorts = ['443', '8443', '2053', '2083', '2087', '2096'];
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
 //let dohURL = 'https://cloudflare-dns.com/dns-query';
+
+let dohURL = '8.8.8.8';
 
 let panelVersion = '2.4.7';
 
@@ -37,7 +39,7 @@ export default {
             
             userID = env.UUID || userID;
             proxyIP = env.PROXYIP || proxyIP;
-           // dohURL = env.DNS_RESOLVER_URL || dohURL;
+            dohURL = env.DNS_RESOLVER_URL || dohURL;
             const upgradeHeader = request.headers.get('Upgrade');
             
             if (!upgradeHeader || upgradeHeader !== 'websocket') {
@@ -1668,13 +1670,13 @@ const getRandomPath = (length) => {
 }
 
 const resolveDNS = async (domain) => {
-   // const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
-  //  const dohURLv6 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
+    const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
+    const dohURLv6 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
 
     try {
         const [ipv4Response, ipv6Response] = await Promise.all([
-          //  fetch(dohURLv4, { headers: { accept: 'application/dns-json' } }),
-         //   fetch(dohURLv6, { headers: { accept: 'application/dns-json' } }),
+            fetch(dohURLv4, { headers: { accept: 'application/dns-json' } }),
+            fetch(dohURLv6, { headers: { accept: 'application/dns-json' } }),
         ]);
 
         const ipv4Addresses = await ipv4Response.json();
