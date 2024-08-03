@@ -1561,7 +1561,7 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
         
         if (bypassIran && !isWorkerLess) {
             rules.push({
-                domain: ["geosite:category-ir", "domain:.ir"],
+                domain: ["geosite:category-ir", "geosite:google, "domain:.ir"],
                 outboundTag: "direct",
                 type: "field",
             });
