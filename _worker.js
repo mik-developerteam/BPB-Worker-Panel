@@ -1542,7 +1542,7 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
         },
         {
           ip: [localDNS],
-          outboundTag: "direct",
+          outboundTag: "proxy",
           port: "53",
           type: "field",
         },
@@ -1561,14 +1561,14 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
     if (bypassIran || bypassLAN) {
         let rule = {
             ip: [],
-            outboundTag: "direct",
+            outboundTag: "proxy",
             type: "field",
         };
         
         if (bypassIran && !isWorkerLess) {
             rules.push({
                 domain: ["geosite:category-ir", "domain:.ir"],
-                outboundTag: "direct",
+                outboundTag: "proxy",
                 type: "field",
             });
             rule.ip.push("geoip:ir");
@@ -3128,7 +3128,7 @@ const singboxConfigTemp = {
         servers: [
             {
                 address: "https://8.8.8.8/dns-query",
-                address_resolver: "dns-direct",
+                address_resolver: "dns-",
                 strategy: "prefer_ipv4",
                 tag: "dns-remote"
             },
@@ -3136,7 +3136,7 @@ const singboxConfigTemp = {
                 address: "8.8.8.8",
                 address_resolver: "dns-local",
                 strategy: "prefer_ipv4",
-                detour: "direct",
+                detour: "proxy",
                 tag: "dns-direct"
             },
             {
@@ -3212,8 +3212,8 @@ const singboxConfigTemp = {
             tolerance: 50
         },
         {
-            type: "direct",
-            tag: "direct"
+            type: "proxy",
+            tag: "proxy"
         },
         {
             type: "block",
@@ -3242,7 +3242,7 @@ const singboxConfigTemp = {
             },
             {
                 ip_is_private: true,
-                outbound: "direct"
+                outbound: "proxy"
             },
             {
                 rule_set: [
@@ -3257,7 +3257,7 @@ const singboxConfigTemp = {
             },
             {
                 rule_set: ["geosite-ir", "geoip-ir"],
-                outbound: "direct"
+                outbound: "proxy"
             },
             {
                 ip_cidr: ["224.0.0.0/3", "ff00::/8"],
