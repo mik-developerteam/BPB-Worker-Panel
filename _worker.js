@@ -17,8 +17,7 @@ const defaultHttpsPorts = ['443', '8443', '2053', '2083', '2087', '2096'];
 
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
-//let dohURL = 'https://dns.google/dns-query';
-let dohURL = 'https://dns.google/dns-query';
+let dohURL = 'https://cloudflare-dns.com/dns-query';
 
 let panelVersion = '2.4.7';
 
@@ -515,7 +514,6 @@ function processVlessHeader(vlessBuffer, userID) {
 
 	// 1--> ipv4  addressLength =4
 	// 2--> domain name addressLength=addressBuffer[1]
-	// 3--> ipv6  addressLength =16
 	const addressType = addressBuffer[0];
 	let addressLength = 0;
 	let addressValueIndex = addressIndex + 1;
@@ -535,19 +533,6 @@ function processVlessHeader(vlessBuffer, userID) {
 			addressValue = new TextDecoder().decode(
 				vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
 			);
-			break;
-		case 3:
-			addressLength = 16;
-			const dataView = new DataView(
-				vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
-			);
-			// 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-			const ipv6 = [];
-			for (let i = 0; i < 8; i++) {
-				ipv6.push(dataView.getUint16(i * 2).toString(16));
-			}
-			addressValue = ipv6.join(':');
-			// seems no need add [] for ipv6
 			break;
 		default:
 			return {
@@ -810,7 +795,6 @@ const getNormalConfigs = async (env, hostName, client) => {
         hostName,
         'www.speedtest.net',
         ...resolved.ipv4,
-        ...resolved.ipv6.map((ip) => `[${ip}]`),
         ...(cleanIPs ? cleanIPs.split(',') : [])
     ];
 
@@ -848,9 +832,6 @@ const generateRemark = (index, port) => {
             remark = `💦 BPB - IPv4_${index - 1} : ${port}`;
             break;
         case 4:
-        case 5:
-            remark = `💦 BPB - IPv6_${index - 3} : ${port}`;
-            break;
         default:
             remark = `💦 BPB - Clean IP_${index - 5} : ${port}`;
             break;
@@ -1048,7 +1029,6 @@ const getFragmentConfigs = async (env, hostName, client) => {
         hostName,
         "www.speedtest.net",
         ...resolved.ipv4,
-        ...resolved.ipv6.map((ip) => `[${ip}]`),
         ...(cleanIPs ? cleanIPs.split(",") : [])
     ];
 
@@ -1225,7 +1205,6 @@ const getSingboxConfig = async (env, hostName) => {
         hostName,
         "www.speedtest.net",
         ...resolved.ipv4,
-        ...resolved.ipv6.map((ip) => `[${ip}]`),
         ...(cleanIPs ? cleanIPs.split(",") : [])
     ];
 
@@ -1345,7 +1324,6 @@ const buildWarpOutbounds = async (env, remoteDNS, localDNS, blockAds, bypassIran
     let singboxOutbound = structuredClone(singboxWgOutboundTemp);
     let xrayOutbounds = [];
     let singboxOutbounds = [];
-    const ipv6Regex = /\[(.*?)\]/;
     const portRegex = /[^:]*$/;
     
     try {
@@ -1383,7 +1361,6 @@ const buildWarpOutbounds = async (env, remoteDNS, localDNS, blockAds, bypassIran
         
         singboxOutbounds.push({
             ...singboxOutbound,
-            server: endpoint.includes('[') ? endpoint.match(ipv6Regex)[1] : endpoint.split(':')[0],
             server_port: endpoint.includes('[') ? +endpoint.match(portRegex)[0] : +endpoint.split(':')[1],
             tag: `💦 Warp ${index + 1} 🇮🇷`
         });
@@ -1396,7 +1373,6 @@ const buildWoWOutbounds = async (env, remoteDNS, localDNS, blockAds, bypassIran,
     let warpConfigs = [];
     let xrayOutbounds = [];
     let singboxOutbounds = [];
-    const ipv6Regex = /\[(.*?)\]/;
     const portRegex = /[^:]*$/;
     
     try {
@@ -1435,7 +1411,6 @@ const buildWoWOutbounds = async (env, remoteDNS, localDNS, blockAds, bypassIran,
                 `${warpConfigs[i].account.config.interface.addresses.v6}/128`
             ];
     
-            singboxOutbound.server = endpoint.includes('[') ? endpoint.match(ipv6Regex)[1] : endpoint.split(':')[0];
             singboxOutbound.server_port = endpoint.includes('[') ? +endpoint.match(portRegex)[0] : +endpoint.split(':')[1];    
             singboxOutbound.peer_public_key = warpConfigs[i].account.config.peers[0].public_key;
             singboxOutbound.reserved = warpConfigs[i].account.config.client_id;
@@ -1492,7 +1467,7 @@ const buildDNSObject = async (remoteDNS, localDNS, blockAds, bypassIran, blockPo
     let dnsObject = {
         hosts: {},
         servers: [
-          isWorkerLess ? "https://dns.google/dns-query" : remoteDNS,
+          isWorkerLess ? "https://cloudflare-dns.com/dns-query" : remoteDNS,
           {
             address: localDNS,
             domains: ["geosite:category-ir", "domain:.ir"],
@@ -1669,26 +1644,20 @@ const getRandomPath = (length) => {
 }
 
 const resolveDNS = async (domain) => {
-    const dohURLv4 = `https://dns.google/dns-query?name=${encodeURIComponent(domain)}&type=A`;
-    const dohURLv6 = `https://dns.google/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
+    const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
 
     try {
-        const [ipv4Response, ipv6Response] = await Promise.all([
+        const [ipv4Response] = await Promise.all([
             fetch(dohURLv4, { headers: { accept: 'application/dns-json' } }),
-            fetch(dohURLv6, { headers: { accept: 'application/dns-json' } }),
         ]);
 
         const ipv4Addresses = await ipv4Response.json();
-        const ipv6Addresses = await ipv6Response.json();
 
         const ipv4 = ipv4Addresses.Answer
             ? ipv4Addresses.Answer.map((record) => record.data)
             : [];
-        const ipv6 = ipv6Addresses.Answer
-            ? ipv6Addresses.Answer.map((record) => record.data)
-            : [];
 
-        return { ipv4, ipv6 };
+        return { ipv4 };
     } catch (error) {
         console.error('Error resolving DNS:', error);
         throw new Error(`An error occurred while resolving DNS - ${error}`);
@@ -3342,7 +3311,6 @@ const singboxOutboundTemp = {
     server: "",
     server_port: 443,
     uuid: "",
-    domain_strategy: "prefer_ipv6",
     packet_encoding: "",
     tls: {
         alpn: [
@@ -3401,7 +3369,6 @@ const singboxWgOutboundTemp = {
     server: "engage.cloudflareclient.com",
     server_port: 2408,
     type: "wireguard",
-    domain_strategy: "prefer_ipv6",
     detour: "",
     tag: ""
 };
