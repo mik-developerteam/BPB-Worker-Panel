@@ -1542,15 +1542,9 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
         },
         {
           ip: [localDNS],
-          outboundTag: "proxy",
+          outboundTag: "direct",
           port: "53",
           type: "field",
-        },
-        // قانون جدید برای دامنه ipnumberia.com
-        {
-            domain: ["ipnumberia.com"],
-            outboundTag: "proxy",
-            type: "field"
         }
     ];
 
@@ -1561,14 +1555,14 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
     if (bypassIran || bypassLAN) {
         let rule = {
             ip: [],
-            outboundTag: "proxy",
+            outboundTag: "direct",
             type: "field",
         };
         
         if (bypassIran && !isWorkerLess) {
             rules.push({
                 domain: ["geosite:category-ir", "domain:.ir"],
-                outboundTag: "proxy",
+                outboundTag: "direct",
                 type: "field",
             });
             rule.ip.push("geoip:ir");
@@ -3128,7 +3122,7 @@ const singboxConfigTemp = {
         servers: [
             {
                 address: "https://8.8.8.8/dns-query",
-                address_resolver: "dns-",
+                address_resolver: "dns-direct",
                 strategy: "prefer_ipv4",
                 tag: "dns-remote"
             },
@@ -3136,7 +3130,7 @@ const singboxConfigTemp = {
                 address: "8.8.8.8",
                 address_resolver: "dns-local",
                 strategy: "prefer_ipv4",
-                detour: "proxy",
+                detour: "direct",
                 tag: "dns-direct"
             },
             {
@@ -3212,8 +3206,8 @@ const singboxConfigTemp = {
             tolerance: 50
         },
         {
-            type: "proxy",
-            tag: "proxy"
+            type: "direct",
+            tag: "direct"
         },
         {
             type: "block",
@@ -3242,7 +3236,7 @@ const singboxConfigTemp = {
             },
             {
                 ip_is_private: true,
-                outbound: "proxy"
+                outbound: "direct"
             },
             {
                 rule_set: [
@@ -3257,7 +3251,7 @@ const singboxConfigTemp = {
             },
             {
                 rule_set: ["geosite-ir", "geoip-ir"],
-                outbound: "proxy"
+                outbound: "direct"
             },
             {
                 ip_cidr: ["224.0.0.0/3", "ff00::/8"],
