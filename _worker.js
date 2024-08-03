@@ -19,7 +19,7 @@ let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
 //let dohURL = 'https://cloudflare-dns.com/dns-query';
 
-let dohURL = '8.8.8.8';
+let dohURL = '1.1.1.1';
 
 let panelVersion = '2.4.7';
 
