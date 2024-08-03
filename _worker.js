@@ -17,7 +17,7 @@ const defaultHttpsPorts = ['443', '8443', '2053', '2083', '2087', '2096'];
 
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
-//let dohURL = 'https://cloudflare-dns.com/dns-query';
+//let dohURL = 'https://dns.google/dns-query';
 let dohURL = 'https://dns.google/dns-query';
 
 let panelVersion = '2.4.7';
@@ -1492,7 +1492,7 @@ const buildDNSObject = async (remoteDNS, localDNS, blockAds, bypassIran, blockPo
     let dnsObject = {
         hosts: {},
         servers: [
-          isWorkerLess ? "https://cloudflare-dns.com/dns-query" : remoteDNS,
+          isWorkerLess ? "https://dns.google/dns-query" : remoteDNS,
           {
             address: localDNS,
             domains: ["geosite:category-ir", "domain:.ir"],
@@ -1669,8 +1669,8 @@ const getRandomPath = (length) => {
 }
 
 const resolveDNS = async (domain) => {
-    const dohURLv4 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`;
-    const dohURLv6 = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
+    const dohURLv4 = `https://dns.google/dns-query?name=${encodeURIComponent(domain)}&type=A`;
+    const dohURLv6 = `https://dns.google/dns-query?name=${encodeURIComponent(domain)}&type=AAAA`;
 
     try {
         const [ipv4Response, ipv6Response] = await Promise.all([
