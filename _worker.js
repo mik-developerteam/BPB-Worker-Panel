@@ -1561,14 +1561,8 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
         
         if (bypassIran && !isWorkerLess) {
             rules.push({
-                domain: ["geosite:google", "domain:.ir"],
+                domain: ["geosite:category-ir", "domain:.ir"],
                 outboundTag: "direct",
-                type: "field",
-            });
-            // اضافه کردن بای‌پس برای همه دامنه‌های جهانی
-            rules.push({
-                domain: ["geosite:category-geoip-cn", "geosite:category-geoip-us", "geosite:category-geoip-uk"],
-                outboundTag: "proxy",
                 type: "field",
             });
             rule.ip.push("geoip:ir");
@@ -1606,7 +1600,6 @@ const buildRoutingRules = (localDNS, blockAds, bypassIran, blockPorn, bypassLAN,
 
     return rules;
 }
-
 
 const base64ToDecimal = (base64) => {
     const binaryString = atob(base64);
